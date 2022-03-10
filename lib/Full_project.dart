@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:page_auth/global_theme.dart';
 
 class FullProject extends StatefulWidget {
   const FullProject({Key? key}) : super(key: key);
@@ -10,15 +11,16 @@ class FullProject extends StatefulWidget {
 class _FullProjectState extends State<FullProject> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      //home: const MainScreen(),
-      initialRoute: '/',
-      routes: {
-        '/':(context)=> const MainScreen(),
-        '/contacts':(context)=>SwitchesDemoScreen(),
-        '/auth':(context)=>AuthScreen(),
-      },
-    );
+      return MaterialApp(
+        theme: globalTheme(),
+        //home: const MainScreen(),
+        initialRoute: '/',
+        routes: {
+          '/': (context) => const MainScreen(),
+          '/contacts': (context) => SwitchesDemoScreen(),
+          '/auth': (context) => AuthScreen(),
+        },
+      );
   }
 }
 Widget navDrawer(context) => Drawer(
@@ -89,28 +91,28 @@ class MainScreen extends StatelessWidget{
   Widget build(BuildContext context){
     final ButtonStyle buttonStyle =
     TextButton.styleFrom(primary: Theme.of(context).colorScheme.onPrimary);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Главная'),
-        actions: <Widget>[
-          IconButton(
-              tooltip: 'Баланс',
-              onPressed: (){},
-              icon: Icon(Icons.account_balance)),
-          IconButton(
-              onPressed: (){},
-              icon: Icon(Icons.settings)),
-          TextButton(
-              style: buttonStyle,
-              onPressed: (){},
-              child: Text('Профиль')),
-        ],
-      ),
-      drawer: navDrawer(context),
-      body: const Center(
-        child: Text('Главная страница'),
-      ),
-    );
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Главная'),
+          actions: <Widget>[
+            IconButton(
+                tooltip: 'Баланс',
+                onPressed: (){},
+                icon: Icon(Icons.account_balance)),
+            IconButton(
+                onPressed: (){},
+                icon: Icon(Icons.settings)),
+            TextButton(
+                style: buttonStyle,
+                onPressed: (){},
+                child: Text('Профиль')),
+          ],
+        ),
+        drawer: navDrawer(context),
+        body: const Center(
+          child: Text('Главная страница'),
+        ),
+      );
   }
 }
 
@@ -135,11 +137,14 @@ class _SwitchesDemoScreenState extends State<SwitchesDemoScreen> {
       _skillLevel = value;
     });
   }
+  bool _isDarkTheme = false;
+
   @override
   Widget build(BuildContext context) {
     final ButtonStyle buttonStyle =
     TextButton.styleFrom(primary: Theme.of(context).colorScheme.onPrimary);
     return MaterialApp(
+      theme: globalTheme(),
       home: Scaffold(
           appBar: AppBar(
             title: const Text('Виджеты'),
@@ -170,6 +175,7 @@ class _SwitchesDemoScreenState extends State<SwitchesDemoScreen> {
                   ],
                 ),
                 CheckboxListTile(
+                    tileColor: Theme.of(context).colorScheme.secondary,
                     title: const Text('Принять условия соглашения'),
                     value: _checked,
                     onChanged: _onCheckedChange),
@@ -185,7 +191,7 @@ class _SwitchesDemoScreenState extends State<SwitchesDemoScreen> {
                     title: const Text('Включить'),
                     value: _checked,
                     onChanged: _onCheckedChange),
-                const Text('Уровень навыков'),
+                 Text('Уровень навыков',style: Theme.of(context).textTheme.headline5),
                 RadioListTile<SkillLevel>(
                     title: const Text('junior'),
                     value: SkillLevel.junior,
@@ -204,6 +210,14 @@ class _SwitchesDemoScreenState extends State<SwitchesDemoScreen> {
                     groupValue: _skillLevel,
                     onChanged: _onSkillLevelChange
                 ),
+                SwitchListTile(
+                    title:  Text('Тёмная тема'),
+                    value: _isDarkTheme,
+                    onChanged: (val){
+                      setState(() {
+                        _isDarkTheme  =!_isDarkTheme;
+                      });
+                    }),
               ],
             ),
           )
