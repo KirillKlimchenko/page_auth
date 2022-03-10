@@ -85,6 +85,7 @@ Widget navDrawer(context) => Drawer(
   ),
 );
 
+
 class MainScreen extends StatelessWidget{
   const MainScreen({Key? key}) : super (key: key);
   @override
@@ -109,10 +110,38 @@ class MainScreen extends StatelessWidget{
           ],
         ),
         drawer: navDrawer(context),
-        body: const Center(
-          child: Text('Главная страница'),
-        ),
+        body: _MyStatefulWidgetState(),
       );
+  }
+}
+
+class _MyStatefulWidgetState extends StatefulWidget {
+  const _MyStatefulWidgetState({Key? key}) : super(key: key);
+
+  @override
+  _MyStatefulWidgetStateState createState() => _MyStatefulWidgetStateState();
+}
+
+class _MyStatefulWidgetStateState extends State<_MyStatefulWidgetState> {
+  int _selectedIndex=0;
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: 20,
+      itemBuilder: (BuildContext context, int index) {
+        return ListTile(
+
+          tileColor: Colors.lightBlueAccent,
+          title: Text('Item $index', style: Theme.of(context).textTheme.headline6,),
+          selected: index == _selectedIndex,
+          onTap: () {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+        );
+      },
+    );
   }
 }
 

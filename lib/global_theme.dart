@@ -4,7 +4,7 @@ ThemeData globalTheme()=> ThemeData(
   fontFamily: 'Georgia',
   splashColor: Colors.yellow,
   colorScheme: ColorScheme.fromSwatch(
-    brightness: Brightness.light,
+    brightness: Brightness.dark,
     primarySwatch: Colors.orange,
   ).copyWith(
     secondary: Colors.green,
