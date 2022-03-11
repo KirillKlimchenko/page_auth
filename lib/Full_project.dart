@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:page_auth/global_theme.dart';
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
 
 class FullProject extends StatefulWidget {
   const FullProject({Key? key}) : super(key: key);
@@ -114,7 +118,43 @@ class MainScreen extends StatelessWidget{
       );
   }
 }
+Future<Posts> fetchPosts() async {
+  final response = await http
+      .get(Uri.parse('https://jsonplaceholder.typicode.com/posts/1'));
 
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    return Posts.fromJson(jsonDecode(response.body));
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load album');
+  }
+}
+class Posts {
+  final int userId;
+  final int id;
+  final String title;
+  final String body;
+
+  const Posts({
+    required this.userId,
+    required this.id,
+    required this.title,
+    required this.body,
+  });
+
+
+  factory Posts.fromJson(Map<String, dynamic> json) {
+    return Posts(
+      userId: json['userId'],
+      id: json['id'],
+      title: json['title'],
+      body: json['body'],
+    );
+  }
+}
 class _MyStatefulWidgetState extends StatefulWidget {
   const _MyStatefulWidgetState({Key? key}) : super(key: key);
 
@@ -123,24 +163,65 @@ class _MyStatefulWidgetState extends StatefulWidget {
 }
 
 class _MyStatefulWidgetStateState extends State<_MyStatefulWidgetState> {
-  int _selectedIndex=0;
+  late Future<Posts> futurePosts;
+
+  @override
+  void initState() {
+    super.initState();
+    futurePosts = fetchPosts();
+  }
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: 20,
-      itemBuilder: (BuildContext context, int index) {
-        return ListTile(
+    return MaterialApp(
+      home: Scaffold(
+        body: Center(
+            child:Column(
+              children: [
+                Row(
+                  children:const [Text('Заголовок публикации:'),],),
+                Row(
+                  children: [
+                    FutureBuilder<Posts>(
+                      future: futurePosts,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return
+                            Expanded(child: Text(snapshot.data!.title,textAlign: TextAlign.center,style: Theme.of(context).textTheme.headline6,),);
+                        } else if (snapshot.hasError) {
+                          return Text('${snapshot.error}');
+                        }
+                        // By default, show a loading spinner.
+                        return const CircularProgressIndicator();
+                      },),],),
+                Row(children:const [Text('Тело публикации:'),],),
+                Row(
+                  children: [
+                    FutureBuilder<Posts>(
+                      future: futurePosts,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Expanded(
+                              child:Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.black26,
+                                      )
+                                  ),
+                                  child: Text(snapshot.data!.body,style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,))));
+                        } else if (snapshot.hasError) {
+                          return Text('${snapshot.error}');
+                        }
+                        // By default, show a loading spinner.
+                        return const CircularProgressIndicator();
+                      },
+                    ),
+                  ],
+                )
+              ],
+            )
 
-          tileColor: Colors.lightBlueAccent,
-          title: Text('Item $index', style: Theme.of(context).textTheme.headline6,),
-          selected: index == _selectedIndex,
-          onTap: () {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-        );
-      },
+        ),
+      ),
     );
   }
 }
